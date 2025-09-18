@@ -26,10 +26,9 @@ app.use(xss()); // Data sanitization against XSS
 app.use(hpp()); // Prevent HTTP Parameter Pollution
 app.use("/api", limiter); // Apply rate limiting to all routes
 
+
 // Logging Middleware
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan("dev"));
 
 //common middleware
 // basic configurations
@@ -61,13 +60,11 @@ console.log("CORS ORIGIN is:", process.env.CORS_ORIGIN);
 
 
 //import routes
-// import healthcheck from "./routes/healthCheck.route.js";
-// import authRoutes  from "./routes/auth.route.js"
+import healthcheck from "./routes/healthCheck.route.js";
 
 
 //routes
-// app.use("/api", healthcheck);
-// app.use("/api/auth", authRoutes);
+app.use("/api", healthcheck);
 
 
 // 404 Handler
