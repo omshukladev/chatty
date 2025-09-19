@@ -13,15 +13,14 @@ This backend powers a full-stack, real-time chat application with the following 
 * Soft delete messages feature
 * Profile management (avatar, full name)
 * API protection with Arcjet & rate limiting
+* Extensible for group chats, notifications, and more
 
----
 
 ## **2. Tech Stack / Packages**
 
 * **Node.js** & **Express**
 * **MongoDB** & **Mongoose**
 * **Socket.io** for real-time events
-* **bcrypt** for password hashing
 * **Cloudinary** for profile/image uploads
 * **Resend** for transactional emails
 * **JWT** for authentication
@@ -36,6 +35,8 @@ This backend powers a full-stack, real-time chat application with the following 
 backend/
 │
 ├── models/
+| roles      | Array   | No       | ["user"]   | For future admin/mod  |
+| settings   | Object  | No       | {}         | User preferences      |
 │   ├── index.js          # central export of all models
 │   ├── User.js           # User schema with bcrypt
 │   └── Message.js        # Message schema with AES encryption
@@ -52,6 +53,8 @@ backend/
 ├── middlewares/
 │   ├── protectRoute.js   # JWT authentication
 │   ├── arcjetProtection.js
+| reactions     | Array    | No       | []      | Emoji reactions          |
+| replyTo      | ObjectId | No       | —       | For threaded replies     |
 │   └── errorHandler.js
 │
 ├── sockets/
@@ -77,8 +80,14 @@ backend/
 ---
 
 ## **4. Models**
+---
+## **Extensibility Notes**
 
-### **User Model**
+- All models are designed for easy extension (add fields, relationships, indexes).
+- For new features, add new models/tables as needed and update relationships.
+- Use Mongoose population for references (e.g., senderId, receiverId, chatId).
+- Index fields that are frequently queried for performance.
+
 
 | Field      | Type    | Required | Default    | Notes                 |
 | ---------- | ------- | -------- | ---------- | --------------------- |
