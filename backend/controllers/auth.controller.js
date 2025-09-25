@@ -104,4 +104,33 @@ const login = asyncHandler(async (req, res) => {
       )
     );
 });
-export { signup, login };
+
+const logout = asyncHandler(async (req, res) => {
+  // STEP: 1. Get user ID from req.user._id (set by verifyJWT middleware)
+  const userId = req.user._id;
+  // STEP: 2. Find user in DB and set refreshToken to empty string by using $set no need to hold this variable
+  await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: { refreshToken: "" },
+    },
+    // STEP: 3. Save updated user and get the latest user object
+    {
+      new: true,
+    }
+  );
+  // STEP: 4. Clear accessToken and refreshToken cookies using cookie options
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  };
+  // STEP: 5. Send a success response with the updated user info
+  return res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged out"));
+});
+
+export { signup, login, logout };
