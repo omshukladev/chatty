@@ -9,6 +9,7 @@ import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+//? Signup Controller
 const signup = asyncHandler(async (req, res) => {
   // STEP: 2. Extract user data (fullName, email, password) from req.body
   const { fullName, email, password } = req.body;
@@ -60,6 +61,7 @@ const signup = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { user: createdUser }, "User registered successfully "));
 });
 
+//? Login Controller
 const login = asyncHandler(async (req, res) => {
   // STEP: 2. Extract login data (email/username and password) from req.body
   const { email, password } = req.body;
@@ -105,6 +107,7 @@ const login = asyncHandler(async (req, res) => {
     );
 });
 
+//? Logout Controller
 const logout = asyncHandler(async (req, res) => {
   // STEP: 1. Get user ID from req.user._id (set by verifyJWT middleware)
   const userId = req.user._id;
@@ -133,4 +136,16 @@ const logout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out"));
 });
 
-export { signup, login, logout };
+//? Current User Controller
+// STEP: 1. Create an async arrow function for the controller
+const getCurrentUser = asyncHandler(async (req, res) => {
+  // STEP: 2. Get the user info from req.user (set and sanitized by verifyJWT middleware)
+  const user = req.user;
+  // STEP: 3. Send a response with the user info and a success message
+  return res.status(200).json(new ApiResponse(200, user, "Current user fetched successfully"));
+});
+
+//? Update User Controller 
+
+
+export { signup, login, logout, getCurrentUser };

@@ -37,3 +37,23 @@
 // STEP: 4. Clear accessToken and refreshToken cookies using cookie options
 // STEP: 5. Send a success response with the updated user info
 ```
+
+**getCurrentUser STEPS**
+
+```js
+// STEP: 1. Create an async arrow function for the controller
+// STEP: 2. Get the user info from req.user (set and sanitized by verifyJWT middleware)
+// STEP: 3. Send a response with the user info and a success message
+```
+
+**getCurrentUser STEPS**
+
+```js
+// STEP: 1. Create an async arrow function for the controller
+// STEP: 2. Extract the data from client you want to update and validate it
+// STEP: 3. Get the user info from req.user (set and sanitized by verifyJWT middleware)
+// STEP: 4. Find the user in the database using the ID from req.user
+// STEP: 5. Update the image in cloudinary 
+// STEP: 6. Update the user fields in db by find by id and update and do new true to get the updated user
+// STEP: 7. Send a response with the updated user info and a success message
+```

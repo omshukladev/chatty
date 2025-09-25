@@ -4,6 +4,7 @@ import { Router } from "express";
 import { signup } from "../controllers/auth.controller.js";
 import { login } from "../controllers/auth.controller.js";
 import { logout } from "../controllers/auth.controller.js";
+import {getCurrentUser} from "../controllers/auth.controller.js";
 
 //importing middlewares and validators
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -17,5 +18,7 @@ const router = Router();
 router.post("/signup", signupLimiter, userRegisterValidator(), validate, signup);
 router.post("/login", loginLimiter, userLoginValidator(), validate, login);
 router.post("/logout", verifyJWT, logout);
+router.get("/me", verifyJWT, getCurrentUser);
+
 
 export default router;
