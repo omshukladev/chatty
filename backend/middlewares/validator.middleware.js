@@ -5,7 +5,7 @@ import { ApiError } from "../utils/apiError.js";
 // STEP: 2. Create middleware function with (req, res, next)
 const validate = (req, res, next) => {
   // STEP: 3. Get validation result: const errors = validationResult(req)
-  const errors = validationResult(req);
+  const errors = validationResult(req); //ye express validator ka method hai jo req se errors nikal ke deta hai
   // STEP: 4. If errors.isEmpty(), call next()
   if (errors.isEmpty()) {
     return next();

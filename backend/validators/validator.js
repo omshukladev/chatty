@@ -35,4 +35,13 @@ const userLoginValidator = () => {
     body("password").notEmpty().withMessage("Password is required"),
   ];
 };
-export { userRegisterValidator, userLoginValidator };
+
+//update user validator
+const userUpdateValidator= ()=> {
+  return [
+    body("fullName").optional().trim(),
+    body("profilePic").optional().trim(),
+  ];
+}
+
+export { userRegisterValidator, userLoginValidator,userUpdateValidator };

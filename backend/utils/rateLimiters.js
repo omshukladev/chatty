@@ -27,4 +27,15 @@ const signupLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-export {loginLimiter,signupLimiter}
+
+const GlobalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // only 5 login attempts per 15 minutes per IP
+  message: {
+    success: false,
+    message: "Too many requests. Please try again later.",
+  },
+  standardHeaders: true, // Return rate limit info in headers
+  legacyHeaders: false, // Disable the X-RateLimit headers
+});
+export { loginLimiter, signupLimiter, GlobalLimiter };

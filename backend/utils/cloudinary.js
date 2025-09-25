@@ -13,3 +13,6 @@ cloudinary.config({
 });
 
 export { cloudinary }; 
+
+
+// TODO: user multer to upload image 
