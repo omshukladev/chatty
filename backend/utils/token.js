@@ -1,5 +1,5 @@
 import { ApiError } from "../utils/apiError.js";
-import { User } from "../models/auth.model.js";
+import { User } from "../models/user.model.js";
 
 
 //generating method for acces and refresh token

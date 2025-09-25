@@ -1,5 +1,8 @@
 # Algorithms and Other Notes
 
+
+**Signup STEPS**
+
 ```js
 
 // STEP: 1. Import required modules (User, apiError, apiResponse, asyncHandler, utils/mail, crypto)
@@ -12,4 +15,19 @@
 // STEP: 8. Create generateAccessAndRefreshTokens
 // STEP: 9. Send welcome email (utils/mail) - try/catch to log errors but not fail signup
 // STEP: 10. sending response to the user
+```
+
+
+
+**Login STEPS**
+
+```js
+// STEP: 1. Import required modules (models, utils, cookie-parser, etc.)
+// STEP: 2. Extract login data (email/username and password) from req.body
+// STEP: 3. Validate required fields
+// STEP: 4. Check if user exists; if not, send error
+// STEP: 5. Compare provided password with stored hash
+// STEP: 6. If password is correct, generate access and refresh tokens
+// STEP: 7. Send tokens in cookies (using res.cookie and cookie-parser)
+// STEP: 8. Send success response with user info (excluding sensitive data)
 ```
