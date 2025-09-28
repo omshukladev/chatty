@@ -52,8 +52,21 @@
 // STEP: 1. Create an async arrow function for the controller
 // STEP: 2. Extract the data from client you want to update and validate it
 // STEP: 3. Get the user info from req.user (set and sanitized by verifyJWT middleware)
-// STEP: 4. Update the image in cloudinary 
+// STEP: 4. Update the image in cloudinary
 // STEP: 5. Find the user in the database using the ID from req.user
 // STEP: 6. Update the user fields in db by find by id and update and do new true to get the updated user
 // STEP: 7. Send a response with the updated user info and a success message
 ```
+
+**updateUser STEPS**
+
+```js
+// STEP: 1. Get uploaded file from multer
+// STEP: 2. Validate input
+// STEP: 3. Get the user info from req.user (set by verifyJWT middleware)
+// STEP: 4. Upload the image to Cloudinary
+// STEP: 5. Update user in DB
+// STEP: 6. Send success response
+```
+
+cmd+p to open file in vs code

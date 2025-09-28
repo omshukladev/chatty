@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { generateAccessAndRefreshTokens } from "../utils/token.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
-import { cloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -147,55 +147,30 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 //? Update User Controller
-// // STEP: 1. Create an async arrow function for the controller
-// const updateUser = asyncHandler(async (req, res) => {
-//   // STEP: 2. Extract the data from client you want to update and validate it
-//   const {  profilePic } = req.body;
-
-//   if ( !profilePic) {
-//     throw new ApiError(400, "profilePic is required");
-//   }
-//   // STEP: 3. Get the user info from req.user (set and sanitized by verifyJWT middleware)
-//   const userId = req.user._id;
-//   // STEP: 4. Update the image in cloudinary
-//   const uploadResponse = await cloudinary.uploader.upload(profilePic);
-//   // STEP: 5. Update the user fields in db by find by id and update and do new true to get the updated user
-//   const updatedUser = await User.findByIdAndUpdate(
-//     userId,
-//     { profilePic: uploadResponse.secure_url },
-//     { new: true }
-//   );
-//   // STEP: 7. Send a response with the updated user info and a success message
-//   return res.status(200).json(new ApiResponse(200, updatedUser, "User updated Successfully"));
-// });
-
-// NOTE: develpment level checking until i implement multer
 const updateUser = asyncHandler(async (req, res) => {
-  const { fullName, profilePic } = req.body;
-
-  if (!fullName && !profilePic) {
-    throw new ApiError(400, "At least one field (fullName or profilePic) is required");
+  // STEP: 1. Get uploaded file from multer
+  const fileLocalPath = req.file?.path;
+  // STEP: 2. Validate input
+  if (!fileLocalPath) {
+    throw new ApiError(400, "profilePic is required");
   }
-
+  // STEP: 3. Get the user info from req.user (set by verifyJWT middleware)
   const userId = req.user._id;
-
-  // Build update object
-  const updateData = {};
-
-  if (fullName) updateData.fullName = fullName;
-
-  if (profilePic) {
-    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-      folder: "profile_pics",
-      resource_type: "auto",
-    });
-    updateData.profilePic = uploadResponse.secure_url;
+  // STEP: 4. Upload the image to Cloudinary
+  const uploadResponse = await uploadOnCloudinary(fileLocalPath, {
+    folder: "chatty",
+    resource_type: "auto",
+  });
+  if (!uploadResponse) {
+    throw new ApiError(500, "Failed to upload image to Cloudinary");
   }
-
-  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-    new: true,
-  }).select("-password -refreshToken");
-
+  // STEP: 5. Update user in DB
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { profilePic: uploadResponse.secure_url },
+    { new: true }
+  ).select("-password -refreshToken");
+  // STEP: 6. Send success response
   return res.status(200).json(new ApiResponse(200, updatedUser, "User updated successfully"));
 });
 

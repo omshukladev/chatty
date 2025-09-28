@@ -11,10 +11,7 @@ import xss from "xss-clean";
 
 //NOTE: always setup .env 1st and global handler at the end as well as 404 handler before that
 
-
 dotenv.config(); // Load environment variables from .env file
-
-
 
 const app = express(); // create express app
 
@@ -25,15 +22,12 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again later.",
 });
 
-
-
 // Security Middleware
 app.use(helmet()); // Set security HTTP headers
 app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
 app.use(xss()); // Data sanitization against XSS
 app.use(hpp()); // Prevent HTTP Parameter Pollution
 app.use("/api", limiter); // Apply rate limiting to all routes
-
 
 // Logging Middleware
 // app.use(morgan("dev"));
@@ -42,9 +36,9 @@ if (process.env.NODE_ENV === "development") {
 }
 //common middleware
 // basic configurations
-app.use(express.json({ limit: "16kb" }));  // to handle json data
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));  // to handle form data
-app.use(express.static("public")); // to serve static files
+app.use(express.json({ limit: "16kb" })); // to handle json data
+app.use(express.urlencoded({ extended: true, limit: "16kb" })); // to handle form data
+app.use(express.static("backend/public")); // to serve static files
 app.use(cookieParser()); // to handle cookies
 // cors configurations
 app.use(
@@ -67,16 +61,13 @@ app.use(
 // console.log("Serving from:", process.env.BASE_URL);
 console.log("CORS ORIGIN is:", process.env.CORS_ORIGIN);
 
-
 //import routes
 import healthcheck from "./routes/healthCheck.route.js";
 import authRoutes from "./routes/auth.route.js";
 
-
 //routes
 app.use("/api", healthcheck);
 app.use("/api/auth", authRoutes);
-
 
 // 404 Handler
 app.use((req, res) => {
@@ -86,8 +77,7 @@ app.use((req, res) => {
   });
 });
 
-
-//GLOBAL ERROR HANDLER 
+//GLOBAL ERROR HANDLER
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err.message);
 
