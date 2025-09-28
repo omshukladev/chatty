@@ -1,3 +1,8 @@
 .env
 node_modules/
 uploads
+
+# Logs
+app.log
+error.log
+*.log

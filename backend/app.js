@@ -8,7 +8,8 @@ import helmet from "helmet";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
-
+import logger from "./utils/logger.js";
+import { requestLogger, logExamples } from "./utils/loggerHelpers.js";
 //NOTE: always setup .env 1st and global handler at the end as well as 404 handler before that
 
 dotenv.config(); // Load environment variables from .env file
@@ -29,10 +30,25 @@ app.use(xss()); // Data sanitization against XSS
 app.use(hpp()); // Prevent HTTP Parameter Pollution
 app.use("/api", limiter); // Apply rate limiting to all routes
 
-// Logging Middleware
-// app.use(morgan("dev"));
+// Request logging middleware (logs all requests)
+app.use(requestLogger);
+
+// Log startup message
+logger.info(`Server starting in ${process.env.NODE_ENV} mode`);
+
+// Define Morgan format string
+const morganFormat = process.env.NODE_ENV === "development" ? "dev" : "combined";
+
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+  app.use(
+    morgan(morganFormat, {
+      stream: {
+        write: (message) => {
+          logger.info(message.trim());
+        },
+      },
+    })
+  );
 }
 //common middleware
 // basic configurations
@@ -79,7 +95,16 @@ app.use((req, res) => {
 
 //GLOBAL ERROR HANDLER
 app.use((err, req, res, next) => {
-  console.error("Global Error Handler:", err.message);
+  // Log the error with our custom logger
+  logger.error(`Global Error Handler: ${err.message}`);
+
+  // Log detailed error info in development mode
+  if (process.env.NODE_ENV === "development") {
+    logger.debug(`Stack: ${err.stack}`);
+    if (err.errors) {
+      logger.debug(`Validation errors: ${JSON.stringify(err.errors)}`);
+    }
+  }
 
   res.status(err.statusCode || 500).json({
     success: false,
