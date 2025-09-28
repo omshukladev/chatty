@@ -50,6 +50,10 @@ if (process.env.NODE_ENV === "development") {
     })
   );
 }
+
+// Log examples of different log levels
+logExamples();
+
 //common middleware
 // basic configurations
 app.use(express.json({ limit: "16kb" })); // to handle json data
@@ -74,15 +78,20 @@ app.use(
   })
 );
 
+
+
 // console.log("Serving from:", process.env.BASE_URL);
 console.log("CORS ORIGIN is:", process.env.CORS_ORIGIN);
 
 //import routes
 import healthcheck from "./routes/healthCheck.route.js";
 import authRoutes from "./routes/auth.route.js";
+// import messagesRoutes from "./routes/messages.route.js";
+
 
 //routes
 app.use("/api", healthcheck);
+// app.use("/api/messages", messagesRoutes);
 app.use("/api/auth", authRoutes);
 
 // 404 Handler
