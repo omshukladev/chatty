@@ -86,12 +86,11 @@ console.log("CORS ORIGIN is:", process.env.CORS_ORIGIN);
 //import routes
 import healthcheck from "./routes/healthCheck.route.js";
 import authRoutes from "./routes/auth.route.js";
-// import messagesRoutes from "./routes/messages.route.js";
-
+import messagesRoutes from "./routes/message.route.js";
 
 //routes
 app.use("/api", healthcheck);
-// app.use("/api/messages", messagesRoutes);
+app.use("/api/messages", messagesRoutes);
 app.use("/api/auth", authRoutes);
 
 // 404 Handler

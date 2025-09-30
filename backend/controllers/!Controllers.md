@@ -68,5 +68,14 @@
 // STEP: 5. Update user in DB
 // STEP: 6. Send success response
 ```
+**getAllContacts**
 
+```js
+// STEP: 1. Import required modules
+// STEP: 2. Extract userId from req.user (set by verifyJWT middleware)
+// STEP: 3. Validate userId (throw ApiError if missing or invalid)
+// STEP: 4. Query database for all users except the logged-in user
+// STEP: 5. Return response
+
+```
 cmd+p to open file in vs code
