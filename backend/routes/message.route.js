@@ -4,7 +4,8 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { GlobalLimiter } from "../utils/rateLimiters.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
-import { getAllContacts } from "../controllers/message.controller.js";
+import { getAllContacts ,getMessagesByUserId ,sendMessage ,getChatPartners} from "../controllers/message.controller.js";
+
 
 const router = express.Router();
 
@@ -12,8 +13,12 @@ const router = express.Router();
 router.get("/contacts", GlobalLimiter, verifyJWT, getAllContacts);
 
 //? Get all users which you are chatting with routes get /api/messages/chats -->getChatPartners
+router.get("/chats", GlobalLimiter, verifyJWT, getChatPartners);
 //? Get the user id that shows all the messages b/w them with routes get /api/messages/:id -->getMessagesByUserId
+router.get("/:id", GlobalLimiter, verifyJWT, getMessagesByUserId);
+
 //? send the messages to the user you have selected with routes post /api/messages/send/:id -->sendMessage
+router.post("/send/:id", GlobalLimiter, verifyJWT, upload.single("image"), sendMessage);
 
 export default router;
 

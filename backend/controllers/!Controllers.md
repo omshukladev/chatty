@@ -68,6 +68,7 @@
 // STEP: 5. Update user in DB
 // STEP: 6. Send success response
 ```
+
 **getAllContacts**
 
 ```js
@@ -76,6 +77,42 @@
 // STEP: 3. Validate userId (throw ApiError if missing or invalid)
 // STEP: 4. Query database for all users except the logged-in user
 // STEP: 5. Return response
-
 ```
+
+**getMessagesByUserId**
+
+```js
+// STEP: 1. Import required modules
+// STEP: 2. Extract current userId from req.user (set by verifyJWT middleware)
+// STEP: 3. Validate userId (throw ApiError if missing or invalid)
+// STEP: 4. Extract the other user's id (chat partner) from req.params
+// STEP: 5. Validate that param id exists and is valid
+// STEP: 6. Query database for all messages where
+//         (senderId = userId AND receiverId = paramId) OR
+//         (senderId = paramId AND receiverId = userId)
+// STEP: 7. Return response (sorted by createdAt for readability)
+```
+
+**sendMessage**
+
+```js
+// STEP: 1. Extract userId from req.user (set by verifyJWT middleware) validate it
+// STEP: 2. Get uploaded file from multer and the sender id from params validate it
+// STEP: 3. Upload in cloudinary
+// STEP: 4. Save in database
+// STEP: 5. Return response
+```
+
+**getChatPartners**
+
+```js
+// STEP: 1. Extract logged-in user id from req.user (set by verifyJWT middleware) validate it
+// STEP: 2. Find all messages where the logged-in user is either sender or receiver
+// STEP: 3. Extract unique user IDs of chat partners from these messages using set in this map function we are checking if the senderId is same as loggedInUserId then we will take the receiverId else we will take the senderId as
+// STEP: 4. Query the User collection to get user details of these chat partners
+//         Exclude sensitive info like password
+//         Use $in operator to find users with _id in chatPartnerIds array
+// STEP: 5. Return response with list of chat partners
+```
+
 cmd+p to open file in vs code
