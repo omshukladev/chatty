@@ -147,7 +147,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 //? Update User Controller
-//TODO: need to add socket.io and encryption in it 
 const updateUser = asyncHandler(async (req, res) => {
   // STEP: 1. Get uploaded file from multer
   const fileLocalPath = req.file?.path;

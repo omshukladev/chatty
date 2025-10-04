@@ -4,12 +4,14 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
-import { generateAccessAndRefreshTokens } from "../utils/token.js";
-import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+//crypto
+import { encryptText, decryptText } from "../utils/encryption.js";
 
 import dotenv from "dotenv";
 dotenv.config();
+
+//TODO: need to add socket.io 
 
 const getAllContacts = asyncHandler(async (req, res) => {
   // STEP: 2. Extract userId from req.user (set by verifyJWT middleware)
@@ -24,6 +26,7 @@ const getAllContacts = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, filteredUsers));
 });
 
+//see all messages between logged-in user and another user
 const getMessagesByUserId = asyncHandler(async (req, res) => {
   // STEP: 2. Extract current userId from req.user (set by verifyJWT middleware)
   const userId = req.user._id;
@@ -49,6 +52,10 @@ const getMessagesByUserId = asyncHandler(async (req, res) => {
   })
     .sort({ createdAt: 1 })
     .select("-__v");
+  // Decrypt text
+  messages.forEach((msg) => {
+    if (msg.text) msg.text = decryptText(msg.text);
+  });
   // STEP: 7. Return response (sorted by createdAt for readability)
   res.status(200).json(new ApiResponse(200, messages));
 });
@@ -62,13 +69,14 @@ const getChatPartners = asyncHandler(async (req, res) => {
   const messages = await Message.find({
     $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
   });
-  // STEP: 3. Extract unique user IDs of chat partners from these messages using set in this map function we are checking if the senderId is same as loggedInUserId then we will take the receiverId else we will take the senderId as 
+  // STEP: 3. Extract unique user IDs of chat partners from these messages using set in this map function we are checking if the senderId is same as loggedInUserId then we will take the receiverId else we will take the senderId as
+  // basically we are getting the id of the person with whom we are chatting and removing the duplicate ids by using set
   const chatPartnerIds = [
-    ...new Set(
-      messages.map((msg) =>
-        msg.senderId.toString() === loggedInUserId.toString()
-          ? msg.receiverId.toString()
-          : msg.senderId.toString()
+    ...new Set( 
+      messages.map((msg) => 
+        msg.senderId.toString() === loggedInUserId.toString() // If the logged-in user is the sender
+          ? msg.receiverId.toString() // Get the receiverId
+          : msg.senderId.toString() // Else, get the senderId
       )
     ),
   ];
@@ -91,9 +99,11 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   const fileLocalPath = req.file?.path;
   const { text } = req.body;
+
   if (!fileLocalPath && !text) {
     throw new ApiError(400, "Message must contain either text or an image");
   }
+  let encryptedText = text ? encryptText(text) : null; // Encrypt the text if it exists
 
   // STEP: 3. Upload in cloudinary (if file exists)
   let imageUrl = null;
@@ -110,7 +120,7 @@ const sendMessage = asyncHandler(async (req, res) => {
   const newMessage = await Message.create({
     senderId,
     receiverId,
-    text,
+    text: encryptedText,
     images: imageUrl,
   });
 
@@ -119,5 +129,3 @@ const sendMessage = asyncHandler(async (req, res) => {
 });
 
 export { getAllContacts, getMessagesByUserId, getChatPartners, sendMessage };
-
-
