@@ -18,7 +18,7 @@ router.get("/chats", GlobalLimiter, verifyJWT, getChatPartners);
 router.get("/:id", GlobalLimiter, verifyJWT, getMessagesByUserId);
 
 //? send the messages to the user you have selected with routes post /api/messages/send/:id -->sendMessage
-router.post("/send/:id", GlobalLimiter, verifyJWT, upload.single("image"), sendMessage);
+router.post("/send/:id", GlobalLimiter, verifyJWT, upload.single("images"), sendMessage);
 
 export default router;
 

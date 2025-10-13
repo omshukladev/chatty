@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === "development") {
       stream: {
         write: (message) => {
           logger.info(message.trim());
-        },
+        }
       },
     })
   );
@@ -56,8 +56,8 @@ logExamples();
 
 //common middleware
 // basic configurations
-app.use(express.json({ limit: "16kb" })); // to handle json data
-app.use(express.urlencoded({ extended: true, limit: "16kb" })); // to handle form data
+app.use(express.json({ limit: "500kb" })); // to handle json data
+app.use(express.urlencoded({ extended: true, limit: "500kb" })); // to handle form data
 app.use(express.static("backend/public")); // to serve static files
 app.use(cookieParser()); // to handle cookies
 // cors configurations

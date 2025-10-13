@@ -27,7 +27,7 @@ const userSchema = new Schema(
     },
     profilePic: {
       type: String,
-      default: "default-avatar.png",
+      default: "/avatar.png",
     },
     refreshToken: {
       type: String,
