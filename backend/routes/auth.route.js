@@ -23,10 +23,4 @@ router.post("/logout",GlobalLimiter, verifyJWT, logout);
 router.get("/me",GlobalLimiter,  verifyJWT, getCurrentUser);
 router.put("/update-profile",GlobalLimiter, verifyJWT,upload.single("profilePic"),  userUpdateValidator(), validate, updateUser);
 
-
-// router.post("/signup",  userRegisterValidator(), validate, signup);
-// router.post("/login",  userLoginValidator(), validate, login);
-// router.post("/logout",verifyJWT, logout);
-// router.get("/me",  verifyJWT, getCurrentUser);
-// router.put("/update-profile", verifyJWT, upload.single("profilePic"),  userUpdateValidator(), validate, updateUser);
 export default router;

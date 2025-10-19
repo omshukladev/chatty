@@ -80,8 +80,7 @@ export const useChatStore = create((set, get) => ({
       // const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData, {
       //   headers: { "Content-Type": "multipart/form-data" },
       // });
-      set({ messages: messages.concat(res.data.data) }); // replace optimistic message with the one from server 
-      
+      set({ messages: messages.concat(res.data.data) }); // replace optimistic message with the one from server
     } catch (error) {
       // remove optimistic message on failure
       set({ messages: messages });

@@ -7,6 +7,8 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 //crypto
 import { encryptText, decryptText } from "../utils/encryption.js";
+//socket
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -113,7 +115,7 @@ const sendMessage = asyncHandler(async (req, res) => {
       resource_type: "auto",
     });
     if (!uploadResponse) throw new ApiError(500, "Failed to upload file to Cloudinary");
-    imageUrl = uploadResponse.secure_url;
+    imageUrl = uploadResponse.secure_url; // Get the secure URL of the uploaded image
   }
 
   // STEP: 4. Save in database
@@ -123,6 +125,12 @@ const sendMessage = asyncHandler(async (req, res) => {
     text: encryptedText,
     images: imageUrl,
   });
+  // NOTE: SOCKET IO EMIT
+
+  const receiverSocketId = getReceiverSocketId(receiverId); // get the socket id of the receiver
+  if (receiverSocketId) { // if the receiver is online
+    io.to(receiverSocketId).emit("newMessage", newMessage); // emit the newMessage event to the receiver
+  }
 
   // STEP: 5. Return response
   res.status(200).json(new ApiResponse(200, newMessage, "Message sent successfully"));
