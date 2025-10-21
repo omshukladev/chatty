@@ -1,22 +1,29 @@
+// index.js
 import dotenv from "dotenv";
+import http from "http";
 import app from "./app.js";
-// import { connect } from "mongoose";  -- practice purpose delete this line if no use
 import connectDB from "./db/db.js";
-import { server } from "./socket/socket.js";
+import { initializeSocket } from "./socket/socket.js";
 
-dotenv.config({
-  path: "./.env", //it is a secrect
-});
+dotenv.config({ path: "./.env" });
+
 const PORT = process.env.PORT || 8000;
-// console.log("Serving from:", process.env.BASE_URL);
+
+// Create HTTP server with Express app
+const server = http.createServer(app);
+
 console.log("CORS ORIGIN is:", process.env.CORS_ORIGIN);
 
+// Connect to MongoDB, then start server + initialize Socket.IO
 connectDB()
   .then(() => {
+    // Initialize Socket.IO after DB and app are ready
+    initializeSocket(server);
+
     server.listen(PORT, () => {
-      console.log(` ⚙️ SERVER IS RUNNING ON PORT => ${PORT}`);
+      console.log(`⚙️ SERVER IS RUNNING ON PORT => ${PORT}`);
     });
   })
   .catch((err) => {
-    console.log("Mongodb connection error", err);
+    console.error("❌ Mongodb connection error:", err);
   });

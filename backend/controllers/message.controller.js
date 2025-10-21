@@ -13,7 +13,7 @@ import { getReceiverSocketId, io } from "../socket/socket.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-//TODO: need to add socket.io 
+//TODO: need to add socket.io
 
 const getAllContacts = asyncHandler(async (req, res) => {
   // STEP: 2. Extract userId from req.user (set by verifyJWT middleware)
@@ -74,11 +74,12 @@ const getChatPartners = asyncHandler(async (req, res) => {
   // STEP: 3. Extract unique user IDs of chat partners from these messages using set in this map function we are checking if the senderId is same as loggedInUserId then we will take the receiverId else we will take the senderId as
   // basically we are getting the id of the person with whom we are chatting and removing the duplicate ids by using set
   const chatPartnerIds = [
-    ...new Set( 
-      messages.map((msg) => 
-        msg.senderId.toString() === loggedInUserId.toString() // If the logged-in user is the sender
-          ? msg.receiverId.toString() // Get the receiverId
-          : msg.senderId.toString() // Else, get the senderId
+    ...new Set(
+      messages.map(
+        (msg) =>
+          msg.senderId.toString() === loggedInUserId.toString() // If the logged-in user is the sender
+            ? msg.receiverId.toString() // Get the receiverId
+            : msg.senderId.toString() // Else, get the senderId
       )
     ),
   ];
@@ -125,15 +126,16 @@ const sendMessage = asyncHandler(async (req, res) => {
     text: encryptedText,
     images: imageUrl,
   });
-  // NOTE: SOCKET IO EMIT
+  // decrypt text for frontend
+  const decryptedMessage = { ...newMessage._doc };
+  if (decryptedMessage.text) decryptedMessage.text = decryptText(decryptedMessage.text);
 
-  const receiverSocketId = getReceiverSocketId(receiverId); // get the socket id of the receiver
-  if (receiverSocketId) { // if the receiver is online
-    io.to(receiverSocketId).emit("newMessage", newMessage); // emit the newMessage event to the receiver
-  }
+  // emit decrypted message
+  const receiverSocketId = getReceiverSocketId(receiverId);
+  if (receiverSocketId) io.to(receiverSocketId).emit("newMessage", decryptedMessage);
 
   // STEP: 5. Return response
-  res.status(200).json(new ApiResponse(200, newMessage, "Message sent successfully"));
+  res.status(200).json(new ApiResponse(200,decryptedMessage , "Message sent successfully"));
 });
 
 export { getAllContacts, getMessagesByUserId, getChatPartners, sendMessage };

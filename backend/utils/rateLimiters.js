@@ -29,7 +29,7 @@ const signupLimiter = rateLimit({
 
 const GlobalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // only 10 requests per 15 minutes per IP
+  max: 10000, // only 10 requests per 15 minutes per IP
   message: {
     success: false,
     message: "Too many requests. Please try again later.",
