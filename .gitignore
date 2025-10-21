@@ -6,3 +6,5 @@ uploads
 app.log
 error.log
 *.log
+.envok
+.envok
