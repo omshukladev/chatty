@@ -15,6 +15,8 @@ import { requestLogger, logExamples } from "./utils/loggerHelpers.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express(); // create express app
+const __dirname = path.resolve();
+
 
 // Global rate limiting
 const limiter = rateLimit({
@@ -112,12 +114,15 @@ app.use((err, req, res, next) => {
     }
   }
 
+  //  Static frontend serving after API routes
   if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/dist")));
-  app.get("/*splat", (req, res) => {
-    res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
-  });
-}
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+    //  Keep this LAST so it doesn’t override `/api/...`
+    app.get("*", (req, res) => {
+      res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    });
+  }
 
   res.status(err.statusCode || 500).json({
     success: false,
