@@ -112,6 +112,13 @@ app.use((err, req, res, next) => {
     }
   }
 
+  if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.get("/*splat", (req, res) => {
+    res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
+  });
+}
+
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || "Internal Server Error",
