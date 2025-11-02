@@ -11,6 +11,9 @@
 
 <p align="center">A modern, secure, and scalable full-stack chat application with end-to-end encryption and real-time messaging.</p>
 
+## 🌐 Live Demo
+
+Check out the live demo of Chatty: [https://chatty-a6ys.onrender.com](https://chatty-a6ys.onrender.com)
 
 ## 📋 Table of Contents
 
@@ -343,7 +346,6 @@ The application implements real-time messaging using Socket.IO:
   - Smooth transition to confirmed messages
   - Error handling for failed message delivery
 
-
 ## 📊 Logging System
 
 The application uses Winston for advanced logging:
@@ -368,7 +370,7 @@ npm run build
 # Start production server
 cd ..
 npm start
-````
+```
 
 ### Environment Considerations
 
