@@ -28,7 +28,8 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
-
+// ✅ Trust Render proxy (fixes X-Forwarded-For warning)
+app.set("trust proxy", 1);
 // Security Middleware
 app.use(helmet()); // Set security HTTP headers
 app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
