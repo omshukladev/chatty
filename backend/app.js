@@ -11,12 +11,16 @@ import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
 import logger from "./utils/logger.js";
 import { requestLogger, logExamples } from "./utils/loggerHelpers.js";
+import { fileURLToPath } from "url";
 //NOTE: always setup .env 1st and global handler at the end as well as 404 handler before that
 
 dotenv.config(); // Load environment variables from .env file
 
 const app = express(); // create express app
-const __dirname = path.resolve();
+// ✅ Proper __dirname setup for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Global rate limiting
 const limiter = rateLimit({
@@ -93,29 +97,31 @@ app.use("/api", healthcheck);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/auth", authRoutes);
 
-// 404 Handler
+
+
+// -------------------- Serve Frontend in Production --------------------
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
+
+  // ✅ Catch-all for React routes (must come before 404)
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(frontendPath, "index.html"));
+  });
+}
+
+// -------------------- 404 Handler --------------------
 app.use((req, res) => {
   res.status(404).json({
     status: "error",
     message: "Route not found",
   });
 });
-//  Static frontend serving after API routes
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-  //  Keep this LAST so it doesn’t override `/api/...`
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-  });
-}
-
-// ✅ GLOBAL ERROR HANDLER (must be last)
+// -------------------- Global Error Handler --------------------
 app.use((err, req, res, next) => {
-  // Log the error with our custom logger
   logger.error(`Global Error Handler: ${err.message}`);
 
-  // Log detailed error info in development mode
   if (process.env.NODE_ENV === "development") {
     logger.debug(`Stack: ${err.stack}`);
     if (err.errors) {
@@ -123,7 +129,6 @@ app.use((err, req, res, next) => {
     }
   }
 
-  // ✅ Send JSON response safely here
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || "Internal Server Error",
@@ -132,6 +137,7 @@ app.use((err, req, res, next) => {
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 });
+
 
 export default app;
 
@@ -142,4 +148,3 @@ export default app;
 
 // It’s a type of attack where an attacker sends multiple parameters with the same name in a single HTTP request.
 
-// TODO: deploy it on render or vercel
