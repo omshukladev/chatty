@@ -31,7 +31,22 @@ const limiter = rateLimit({
 // ✅ Trust Render proxy (fixes X-Forwarded-For warning)
 app.set("trust proxy", 1);
 // Security Middleware
-app.use(helmet()); // Set security HTTP headers
+// app.use(helmet()); // Set security HTTP headers
+// for latest browser compatibilty you cant upload images for that use this 
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", "https://res.cloudinary.com", "https://api.cloudinary.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  })
+);
+
 app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
 app.use(xss()); // Data sanitization against XSS
 app.use(hpp()); // Prevent HTTP Parameter Pollution
