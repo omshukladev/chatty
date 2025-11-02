@@ -17,7 +17,10 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
+
+
   // Redirect logic
+
   useEffect(() => {
     if (isCheckingAuth) return;
 

@@ -101,21 +101,7 @@ app.use((req, res) => {
     message: "Route not found",
   });
 });
-
-//GLOBAL ERROR HANDLER
-app.use((err, req, res, next) => {
-  // Log the error with our custom logger
-  logger.error(`Global Error Handler: ${err.message}`);
-
-  // Log detailed error info in development mode
-  if (process.env.NODE_ENV === "development") {
-    logger.debug(`Stack: ${err.stack}`);
-    if (err.errors) {
-      logger.debug(`Validation errors: ${JSON.stringify(err.errors)}`);
-    }
-  }
-
-  //  Static frontend serving after API routes
+//  Static frontend serving after API routes
   if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
@@ -132,6 +118,21 @@ app.use((err, req, res, next) => {
     errors: err.errors || [],
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
+
+//GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  // Log the error with our custom logger
+  logger.error(`Global Error Handler: ${err.message}`);
+
+  // Log detailed error info in development mode
+  if (process.env.NODE_ENV === "development") {
+    logger.debug(`Stack: ${err.stack}`);
+    if (err.errors) {
+      logger.debug(`Validation errors: ${JSON.stringify(err.errors)}`);
+    }
+  }
+
+  
 });
 
 export default app;
