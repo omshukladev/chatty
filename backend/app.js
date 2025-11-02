@@ -18,7 +18,6 @@ dotenv.config(); // Load environment variables from .env file
 const app = express(); // create express app
 const __dirname = path.resolve();
 
-
 // Global rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -102,24 +101,16 @@ app.use((req, res) => {
   });
 });
 //  Static frontend serving after API routes
-  if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-    //  Keep this LAST so it doesn’t override `/api/...`
-    app.get("*", (req, res) => {
-      res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-    });
-  }
-
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-    statusCode: err.statusCode || 500,
-    errors: err.errors || [],
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  //  Keep this LAST so it doesn’t override `/api/...`
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
   });
+}
 
-//GLOBAL ERROR HANDLER
+// ✅ GLOBAL ERROR HANDLER (must be last)
 app.use((err, req, res, next) => {
   // Log the error with our custom logger
   logger.error(`Global Error Handler: ${err.message}`);
@@ -132,7 +123,14 @@ app.use((err, req, res, next) => {
     }
   }
 
-  
+  // ✅ Send JSON response safely here
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    statusCode: err.statusCode || 500,
+    errors: err.errors || [],
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
 });
 
 export default app;
