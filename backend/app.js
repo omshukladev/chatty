@@ -36,16 +36,25 @@ app.set("trust proxy", 1);
 app.use(
   helmet({
     contentSecurityPolicy: {
+      useDefaults: true,
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-        connectSrc: ["'self'", "https://res.cloudinary.com", "https://api.cloudinary.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://res.cloudinary.com"],
+        connectSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://res.cloudinary.com",
+          "https://api.cloudinary.com",
+        ],
         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
+        fontSrc: ["'self'", "data:"],
       },
     },
   })
 );
+
 
 app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
 app.use(xss()); // Data sanitization against XSS
