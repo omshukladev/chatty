@@ -54,6 +54,13 @@ app.use(
     },
   })
 );
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; img-src 'self' data: blob: https://res.cloudinary.com; connect-src 'self' data: blob: https://res.cloudinary.com https://api.cloudinary.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+  );
+  next();
+});
 
 
 app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
