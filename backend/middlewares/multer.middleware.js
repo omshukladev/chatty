@@ -1,21 +1,33 @@
+// backend/middlewares/multer.middleware.js
 import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-// Configure how multer will store incoming files locally
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Create absolute upload path (works locally & on Render)
+const uploadPath = path.join(process.cwd(), "backend/public/temp");
+
+// ✅ Ensure directory exists before saving
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+  console.log("✅ Created upload directory:", uploadPath);
+}
+
 const storage = multer.diskStorage({
-  // STEP: 1 Decide where to save the uploaded files
-  destination: function (req, file, cb) {
-    // Save files in "./backend/public/temp" folder
-    cb(null, "./backend/public/temp");
+  destination: (req, file, cb) => {
+    cb(null, uploadPath);
   },
-
-  // STEP: 2 Decide the name of the saved file
-  filename: function (req, file, cb) {
-    // Use the file's original name (as uploaded by client)
-    cb(null, file.originalname);
+  filename: (req, file, cb) => {
+    // Use timestamp to avoid overwriting files with same name
+    const ext = path.extname(file.originalname);
+    const name = path.basename(file.originalname, ext);
+    cb(null, `${name}-${Date.now()}${ext}`);
   },
 });
 
-// Create the multer upload middleware
-export const upload = multer({
-  storage, // use the storage rules above
-});
+export const upload = multer({ storage });
+
+
